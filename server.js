@@ -5,7 +5,9 @@ const morgan = require("morgan");
 
 dotenv.config({ path: "config.env" })
 const dbConnection = require("./config/database")
-const categoryRoute = require("./routes/category_route")
+const categoryRoute = require("./routes/categoryRoute")
+const ApiError = require("./utils/apiError")
+const globalError = require("./middlewares/errorMiddleware")
 
 // ------------------------------------------- Connect with DB
 dbConnection();
@@ -24,12 +26,28 @@ if (process.env.NODE_ENV == "development") {
 // ------------------------------------------- Mount Route
 app.use("/api/v1/categories", categoryRoute);
 
+app.all("*", (req, res, next) => {
+    next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400))
+})
+
+// ------------------------------------------- Global error handling middleware for express
+app.use(globalError);
+
 // ------------------------------------------- Server listen
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running on port: ${PORT}`);
 })
 
+
+// Event => list => callback(err)
+process.on("unhandledRejection", (err) => {
+    console.error(`unhandledRejection Error: ${err.name} | ${err.message}`);
+    server.close(() => {
+        console.error("Shutting down...");
+        process.exit(1);
+    });
+});
 
 
 
@@ -46,7 +64,7 @@ ________________________________________________________________________________
 
  ===============================================> Git for tomorrow
  
- git commit -m "Project Folders Structure"
+ git commit -m "Error Handling & Validation"
 
 ===============================================> Basic  Architecture
 |
