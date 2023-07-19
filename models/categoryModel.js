@@ -13,9 +13,10 @@ const CategorySchema = new mongoose.Schema({
     slug: {
         type: String,
         lowercase: true,
-    }
+    },
+    image: String,
 },
-    { timestamps: true }
+    { timestamps: true },
 )
 
 // 2- Create model

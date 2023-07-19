@@ -5,9 +5,10 @@ const morgan = require("morgan");
 
 dotenv.config({ path: "config.env" })
 const dbConnection = require("./config/database")
-const categoryRoute = require("./routes/categoryRoute")
 const ApiError = require("./utils/apiError")
 const globalError = require("./middlewares/errorMiddleware")
+const categoryRoute = require("./routes/categoryRoute")
+const subcategoryRoute = require("./routes/subcategoryRoute")
 
 // ------------------------------------------- Connect with DB
 dbConnection();
@@ -18,13 +19,14 @@ const app = express();
 // ------------------------------------------- middlewares 
 app.use(express.json());
 
-if (process.env.NODE_ENV == "development") {
+if (process.env.NODE_ENV === "development") {
     app.use(morgan('dev'))
     console.log(`mode: ${process.env.NODE_ENV}`)
 }
 
 // ------------------------------------------- Mount Route
 app.use("/api/v1/categories", categoryRoute);
+app.use("/api/v1/subcategories", subcategoryRoute);
 
 app.all("*", (req, res, next) => {
     next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400))
@@ -34,7 +36,7 @@ app.all("*", (req, res, next) => {
 app.use(globalError);
 
 // ------------------------------------------- Server listen
-const PORT = process.env.PORT;
+const {PORT} = process.env;
 const server = app.listen(PORT, () => {
     console.log(`Server running on port: ${PORT}`);
 })
@@ -64,7 +66,7 @@ ________________________________________________________________________________
 
  ===============================================> Git for tomorrow
  
- git commit -m "Error Handling & Validation"
+ git commit -m ""
 
 ===============================================> Basic  Architecture
 |
