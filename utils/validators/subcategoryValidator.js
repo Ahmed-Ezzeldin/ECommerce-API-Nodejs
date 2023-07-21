@@ -22,16 +22,19 @@ exports.createSubcategoryValidator = [
   validatorMiddleware,
 ];
 
-// exports.updateSubcategoryValidator = [
-//     check('id').isMongoId().withMessage("Invalid subcategory id format"),
-//     check("name")
-//         .notEmpty().withMessage("subcategory is required")
-//         .isLength({ min: 3 }).withMessage("Too short subcategory name")
-//         .isLength({ max: 32 }).withMessage("Too long subcategory name"),
-//     validatorMiddleware,
-// ];
+exports.updateSubcategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid subcategory id format"),
+  check("name")
+    .notEmpty()
+    .withMessage("subcategory is required")
+    .isLength({ min: 2 })
+    .withMessage("Too short subcategory name")
+    .isLength({ max: 32 })
+    .withMessage("Too long subcategory name"),
+  validatorMiddleware,
+];
 
-// exports.deleteSubcategoryValidator = [
-//     check('id').isMongoId().withMessage("Invalid subcategory id format"),
-//     validatorMiddleware,
-// ];
+exports.deleteSubcategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid subcategory id format"),
+  validatorMiddleware,
+];
