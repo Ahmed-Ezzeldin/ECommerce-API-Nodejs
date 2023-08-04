@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema(
       required: true,
       lowercase: true,
     },
-    discription: {
+    description: {
       type: String,
       required: [true, "Product description is required"],
       minlength: [20, "Too short product discription"],
@@ -32,7 +32,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Product price is required"],
       trim: true,
-      max: [20, "Too long product price"],
+      max: [200000, "Too long product price"],
     },
     priceAfterDiscount: {
       type: Number,
@@ -62,7 +62,7 @@ const productSchema = new mongoose.Schema(
     ratingsAverage: {
       type: Number,
       min: [1, "Rating must be above or equal to 1.0"],
-      max: [1, "Rating must be below or equal to 5.0"],
+      max: [5, "Rating must be below or equal to 5.0"],
     },
     ratingsQuantity: {
       type: Number,
