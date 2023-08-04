@@ -1,7 +1,7 @@
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
-const Subcategory = require("../models/subcategoryModel");
+const Subcategory = require("../models/subCategoryModel");
 
 exports.setCategoryIdToBody = (req, res, next) => {
   // Nested Route
