@@ -21,6 +21,7 @@
         "class-methods-use-this": "off",
         //   "no-undef": "warn",
         "no-undef": "error",
+        "node/no-unsupported-features/es-syntax": "off",
         "prefer-destructuring": [
             "warn",
             {
