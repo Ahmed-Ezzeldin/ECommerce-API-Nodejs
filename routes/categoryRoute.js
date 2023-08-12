@@ -1,10 +1,11 @@
-const express = require('express');
+const express = require("express");
+
 const {
   getCategoryValidator,
   createCategoryValidator,
   updateCategoryValidator,
   deleteCategoryValidator,
-} = require('../utils/validators/categoryValidator');
+} = require("../utils/validators/categoryValidator");
 
 const {
   getCategories,
@@ -12,19 +13,23 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
-} = require('../services/categoryService');
-const subcategoriesRoute = require('./subCategoryRoute');
+  uploadCategoryImage,
+} = require("../services/categoryService");
+
+
+const subcategoriesRoute = require("./subcategoryRoute");
 
 const router = express.Router();
 
-router.use('/:categoryId/subcategories', subcategoriesRoute);
+router.use("/:categoryId/subcategories", subcategoriesRoute);
 
+router.route("/").get(getCategories).post(
+  uploadCategoryImage,
+  createCategoryValidator,
+  createCategory
+);
 router
-  .route('/')
-  .get(getCategories)
-  .post(createCategoryValidator, createCategory);
-router
-  .route('/:id')
+  .route("/:id")
   .get(getCategoryValidator, getCategory)
   .put(updateCategoryValidator, updateCategory)
   .delete(deleteCategoryValidator, deleteCategory);
