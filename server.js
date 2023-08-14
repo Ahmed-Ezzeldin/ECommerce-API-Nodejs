@@ -1,3 +1,5 @@
+const path = require("path");
+
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
@@ -21,6 +23,7 @@ const app = express();
 
 // ------------------------------------------- middlewares
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -60,12 +63,12 @@ ________________________________________________________________________________
 ________________________________________________________________________________________________
 
  ===============================================> To Do Tasks
- * test 1
- * test 2
+ * temp 1
+ * temp 2
 
  ===============================================> Git for tomorrow
  
- git commit -m ""
+ git commit -m "Upload Brand image"
 
 ===============================================> Basic  Architecture
 |

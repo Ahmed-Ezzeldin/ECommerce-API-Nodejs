@@ -1,34 +1,26 @@
-const multer = require("multer");
+const sharp = require("sharp");
+const asyncHandler = require("express-async-handler");
 const { v4: uuidv4 } = require("uuid");
 const factory = require("./handlersFactory");
 const Category = require("../models/categoryModel");
-const ApiError = require("../utils/apiError");
+const { uploadSingleImage } = require("../middlewares/uploadImageMiddleware");
 
-// DiskStorage engine
-const multerStorage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, "uploads/categories");
-  },
-  filename: function (req, file, callback) {
-    // category_${id}_Date.now().png
-    const ext = file.mimetype.split("/")[1];
-    const filename = `category_${uuidv4()}_${Date.now()}.${ext}`;
-    callback(null, filename);
-  },
+// upload single image
+exports.uploadCategoryImage = uploadSingleImage("image");
+
+// image processing 
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  // console.log(req.file);
+  const filename = `category_${uuidv4()}_${Date.now()}.jpeg`;
+  await sharp(req.file.buffer)
+    // .resize(600, 600)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/categories/${filename}`);
+
+  req.body.image = filename;
+  next();
 });
-
-const multerFilter = function (req, file, callback) {
-  // image/png
-  if (file.mimetype.startsWith("image")) {
-    callback(null, true);
-  } else {
-    callback(new ApiError("Only images allowed", 400), false);
-  }
-};
-
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-
-exports.uploadCategoryImage = upload.single("image");
 
 // @desc    Get list of categories
 // @route   GET /api/v1/categories
