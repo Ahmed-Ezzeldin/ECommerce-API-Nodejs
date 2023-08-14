@@ -1,25 +1,11 @@
-const multer = require("multer");
 const asyncHandler = require("express-async-handler");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const factory = require("./handlersFactory");
 const Product = require("../models/productModel");
-const ApiError = require("../utils/apiError");
+const { uploadMixOfImages } = require("../middlewares/uploadImageMiddleware");
 
-const multerStorage = multer.memoryStorage();
-
-const multerFilter = function (req, file, callback) {
-  // image/png
-  if (file.mimetype.startsWith("image")) {
-    callback(null, true);
-  } else {
-    callback(new ApiError("Only images allowed", 400), false);
-  }
-};
-
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-
-exports.uploadProductImages = upload.fields([
+exports.uploadProductImages = uploadMixOfImages([
   { name: "imageCover", maxCount: 1 },
   { name: "images", maxCount: 5 },
 ]);

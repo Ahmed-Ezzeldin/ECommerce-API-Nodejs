@@ -16,7 +16,7 @@ const ApiError = require("../utils/apiError");
 //
 // 2- Memory storage engine
 
-exports.uploadSingleImage = (fieldName) => {
+const multerOptions = () => {
   const multerStorage = multer.memoryStorage();
 
   const multerFilter = function (req, file, callback) {
@@ -29,5 +29,10 @@ exports.uploadSingleImage = (fieldName) => {
   };
 
   const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-  return upload.single(fieldName);
+  return upload;
 };
+
+exports.uploadSingleImage = (fieldName) => multerOptions().single(fieldName);
+
+exports.uploadMixOfImages = (arrayOfFields) =>
+  multerOptions().fields(arrayOfFields);
