@@ -16,8 +16,6 @@ const sendErrorForProd = (err, res) =>
     message: err.message,
   });
 
-const handleJwtInvalidSignature = () =>
-  new ApiError("Invalid token, please login again.", 401);
 
 const globalError = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;

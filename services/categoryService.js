@@ -8,17 +8,18 @@ const { uploadSingleImage } = require("../middlewares/uploadImageMiddleware");
 // upload single image
 exports.uploadCategoryImage = uploadSingleImage("image");
 
-// image processing 
+// image processing
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   // console.log(req.file);
   const filename = `category_${uuidv4()}_${Date.now()}.jpeg`;
-  await sharp(req.file.buffer)
-    // .resize(600, 600)
-    .toFormat("jpeg")
-    .jpeg({ quality: 90 })
-    .toFile(`uploads/categories/${filename}`);
-
-  req.body.image = filename;
+  if (req.file) {
+    await sharp(req.file.buffer)
+      // .resize(600, 600)
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`uploads/categories/${filename}`);
+    req.body.image = filename;
+  }
   next();
 });
 

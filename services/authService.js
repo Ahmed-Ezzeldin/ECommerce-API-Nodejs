@@ -42,14 +42,12 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @desc    make sure the user is logged in
 exports.protect = asyncHandler(async (req, res, next) => {
   // 1) Check if token exist, if exist get it
-  console.log(req.headers);
   let token;
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
-    console.log(token);
   }
   if (!token) {
     return next(
@@ -87,3 +85,16 @@ exports.protect = asyncHandler(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// ["admin", "manager"]
+exports.allowedTo = (...roles) =>
+  asyncHandler(async (req, res, next) => {
+    // 1) access roles
+    // 2) access registered user (req.user.role)
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError("You are not allowed to access this route", 403)
+      );
+    }
+    next();
+  });
