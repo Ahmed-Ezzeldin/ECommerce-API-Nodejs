@@ -86,7 +86,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
-// ["admin", "manager"]
+// make sure user is type ["admin", "manager"]
 exports.allowedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
     // 1) access roles
