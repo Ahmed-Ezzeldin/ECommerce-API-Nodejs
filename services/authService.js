@@ -131,7 +131,9 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
   // 4) Send the reset code to email
 
-  const message = `Hi ${user.name}, \n We received a request to reset the password on your E-Commerce App Account. \n${resetCode} \n Enter the code to complete the reset \n Thanks.`;
+  const message =
+    `Hi ${user.name}, \nWe received a request to reset the password on your E-Commerce App Account.` +
+    `\n\n${resetCode} \nEnter the code to complete the reset \n\nBest regards, \nE-Commerce App Team`;
   try {
     await sendEmail({
       email: user.email,
@@ -149,4 +151,58 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   res
     .status(200)
     .json({ status: "Success", message: "Reset code was sent successfully" });
+});
+
+// @desc    veridy password
+// @route   Post /api/v1/auth/verifyResetCode
+// @access  Public
+exports.verifyPasswordResetCode = asyncHandler(async (req, res, next) => {
+  // 1) - Get User based on reset code
+  const hashedResetCode = crypto
+    .createHash("sha256")
+    .update(req.body.resetCode)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetCode: hashedResetCode,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new ApiError("Reset code was invalid or expired", 400));
+  }
+
+  // 2) - Reset code valid
+  user.passwordResetVerified = true;
+  await user.save();
+  res.json({ status: "Success" });
+});
+
+// @desc    Reset password
+// @route   Post /api/v1/auth/resetPassword
+// @access  Public
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(
+      new ApiError(`There is no user with this email ${req.body.email}`, 404)
+    );
+  }
+
+  if (!user.passwordResetVerified) {
+    return next(new ApiError("Reset code not verified", 400));
+  }
+  
+  console.log(req.body.newPassword);
+
+  user.password = req.body.newPassword;
+  user.passwordResetCode = undefined;
+  user.passwordResetExpires = undefined;
+  user.passwordResetVerified = undefined;
+  await user.save();
+
+  console.log(user.password);
+  const token = createToken(user._id);
+  res.status(200).json({ token });
 });
