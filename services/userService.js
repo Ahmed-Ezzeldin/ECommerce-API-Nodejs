@@ -7,6 +7,7 @@ const factory = require("./handlersFactory");
 const User = require("../models/userModel");
 const ApiError = require("../utils/apiError");
 const { uploadSingleImage } = require("../middlewares/uploadImageMiddleware");
+const createToken = require("../utils/createToken");
 
 exports.uploadUserImage = uploadSingleImage("profileImg");
 
@@ -85,4 +86,66 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
     return next(new ApiError(`No document for this id ${req.params.id}`, 404));
   }
   res.status(200).json({ data: document });
+});
+
+// @desc    Get Logged user data
+// @route   GET /api/v1/users/getMe
+// @access  Privates/Protect
+exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+});
+
+// @desc    Update Logged user password
+// @route   PUT /api/v1/users/updateMyPassword
+// @access  Privates/Protect
+
+exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+      passwordChangedAt: Date.now(),
+    },
+    {
+      new: true,
+    }
+  );
+
+  const token = createToken(user._id);
+  res.status(200).json({ data: user, token });
+});
+
+// @desc    Update Logged user data (without password , role)
+// @route   PUT /api/v1/users/updateMe
+// @access  Privates/Protect
+exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(200).json({ data: updatedUser });
+});
+
+// @desc    Deactivate Logged user
+// @route   PUT /api/v1/users/deleteMe
+// @access  Privates/Protect
+exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      active: false,
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(204).json({ status: "Success" });
 });

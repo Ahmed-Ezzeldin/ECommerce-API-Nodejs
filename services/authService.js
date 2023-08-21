@@ -6,11 +6,7 @@ const bcrypt = require("bcryptjs");
 const ApiError = require("../utils/apiError");
 const User = require("../models/userModel");
 const sendEmail = require("../utils/sendEmail");
-
-const createToken = (userId) =>
-  jwt.sign({ userId: userId }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRE_TIME,
-  });
+const createToken = require("../utils/createToken");
 
 // @desc    Signup
 // @route   GET /api/v1/auth/signup
@@ -193,7 +189,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   if (!user.passwordResetVerified) {
     return next(new ApiError("Reset code not verified", 400));
   }
-  
+
   console.log(req.body.newPassword);
 
   user.password = req.body.newPassword;
