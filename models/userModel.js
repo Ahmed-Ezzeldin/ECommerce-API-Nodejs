@@ -38,6 +38,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    // addresses: [
+    //   // Embedded document
+    //   {
+    //     title: String,
+    //     postalCode: Number,
+    //     street: String,
+    //   },
+    // ],
   },
   { timestamps: true }
 );
